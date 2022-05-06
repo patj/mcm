@@ -7,6 +7,7 @@
 
 import Cocoa
 
+
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -17,7 +18,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quit), keyEquivalent: "q"))
         statusItem.menu = menu
         
-        statusItem.button?.title = "MCM"
+        let size = NSMakeSize(22, 22)
+        let image = NSImage(named:"statusbaricon")
+        image?.size = size
+        statusItem.button?.image = image
         
         
         NSWorkspace.shared.notificationCenter.addObserver(self,
