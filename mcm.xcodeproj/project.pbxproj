@@ -45,6 +45,7 @@
 		65FB1C8428251B21006640ED /* mcmUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mcmUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		65FB1C8828251B21006640ED /* mcmUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mcmUITests.swift; sourceTree = "<group>"; };
 		65FB1C8A28251B21006640ED /* mcmUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mcmUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		65FB1C9728251B5C006640ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +96,7 @@
 		65FB1C6B28251B20006640ED /* mcm */ = {
 			isa = PBXGroup;
 			children = (
+				65FB1C9728251B5C006640ED /* Info.plist */,
 				65FB1C6C28251B20006640ED /* AppDelegate.swift */,
 				65FB1C6E28251B20006640ED /* ViewController.swift */,
 				65FB1C7028251B20006640ED /* Assets.xcassets */,
@@ -425,6 +427,7 @@
 				DEVELOPMENT_TEAM = 34EE483BJZ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = mcm/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -452,6 +455,7 @@
 				DEVELOPMENT_TEAM = 34EE483BJZ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = mcm/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
