@@ -12,6 +12,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    var locationOfApps: [ String: CGPoint ] = [:]
     
     @discardableResult
     func acquirePrivileges() -> Bool {
@@ -57,32 +58,54 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         NSWorkspace.shared.notificationCenter.addObserver(self,
                                                           selector: #selector(appChanged(_:)),
-                                                          name: NSWorkspace.didActivateApplicationNotification,
+                                                          name: NSWorkspace.didDeactivateApplicationNotification,
                                                           object: nil)
 
     }
 
-    
     @objc func appChanged(_ notification: NSNotification) {
 
+        guard let prevApp = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+              let prevAppIdentifier: String = prevApp.bundleIdentifier
+        else{
+            return
+        }
         guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.isActive }),
+              let appIdentifier = app.bundleIdentifier,
               let window = self.getFocusedWindow(pid: app.processIdentifier)
         else {
             return
         }
 
-        let axPositionValue: AXValue = self.copyAttributeValue(window, attribute: "AXPosition") as! AXValue
-        var position: CGPoint = CGPoint.zero
-        AXValueGetValue(axPositionValue, AXValueType.cgPoint, &position)
+       
+        let mouseLocEvent = CGEvent.init(source: nil)
+        let currentLocation: CGPoint = mouseLocEvent!.location
 
-        let axSizeValue: AXValue = self.copyAttributeValue(window, attribute: "AXSize") as! AXValue
-        var size: CGSize = CGSize.zero
-        AXValueGetValue(axSizeValue, AXValueType.cgSize, &size)
+        var newLocation: CGPoint = CGPoint.zero
 
-        let pointX: Double = position.x + ( size.width / 2 )
-        let pointY: Double = position.y + ( size.height / 2 )
-            CGWarpMouseCursorPosition( CGPoint( x: pointX, y: pointY ) )
+        if( locationOfApps[ appIdentifier ] != nil ){
+            newLocation = locationOfApps[ appIdentifier ] as! CGPoint
+        }else{
+            let axPositionValue: AXValue = self.copyAttributeValue(window, attribute: "AXPosition") as! AXValue
+            var position: CGPoint = CGPoint.zero
+            AXValueGetValue(axPositionValue, AXValueType.cgPoint, &position)
 
+            var size: CGSize = CGSize.zero
+            let axSizeValue: AXValue = self.copyAttributeValue(window, attribute: "AXSize") as! AXValue
+            AXValueGetValue(axSizeValue, AXValueType.cgSize, &size)
+
+            let pointX: Double = position.x + ( size.width / 2 )
+            let pointY: Double = position.y + ( size.height / 2 )
+
+            newLocation = CGPoint( x: pointX, y: pointY )
+        }
+
+        if( prevAppIdentifier != nil ){
+            // 切り替え前のアプリに紐づかせて、マウスカーソル位置を保存
+            locationOfApps[ prevAppIdentifier ] = currentLocation
+        }
+        
+        CGWarpMouseCursorPosition( newLocation )
     }
 
     @objc func quit(_ sender: NSMenuItem) {
