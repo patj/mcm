@@ -13,7 +13,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
+    @discardableResult
+    func acquirePrivileges() -> Bool {
+        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String : true]
+        
+        let accessEnabled = AXIsProcessTrustedWithOptions(options)
+        if !accessEnabled {
+            print("Access Not Enabled")
+        }
+        return accessEnabled
+    }
+
+    private func copyAttributeValue(_ element: AXUIElement, attribute: String) -> CFTypeRef? {
+        var ref: CFTypeRef? = nil
+        let error = AXUIElementCopyAttributeValue(element, attribute as CFString, &ref)
+        if error == .success {
+            return ref
+        }
+        return .none
+    }
+    
+    private func getFocusedWindow(pid: pid_t) -> AXUIElement? {
+        let element = AXUIElementCreateApplication(pid)
+        if let window = self.copyAttributeValue(element, attribute: kAXFocusedWindowAttribute) {
+            return (window as! AXUIElement)
+        }
+        return nil
+    }
+    
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        acquirePrivileges()
+
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quit), keyEquivalent: "q"))
         statusItem.menu = menu
@@ -31,42 +62,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     }
 
+    
     @objc func appChanged(_ notification: NSNotification) {
-        guard let pid: Int32 = NSWorkspace.shared.frontmostApplication?.processIdentifier else {
+
+        guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.isActive }),
+              let window = self.getFocusedWindow(pid: app.processIdentifier)
+        else {
             return
         }
 
-        let targetWindow: NSDictionary? = getWindowList( pid:pid )?[0]
+        let axPositionValue: AXValue = self.copyAttributeValue(window, attribute: "AXPosition") as! AXValue
+        var position: CGPoint = CGPoint.zero
+        AXValueGetValue(axPositionValue, AXValueType.cgPoint, &position)
 
-        if( targetWindow != nil ){
+        let axSizeValue: AXValue = self.copyAttributeValue(window, attribute: "AXSize") as! AXValue
+        var size: CGSize = CGSize.zero
+        AXValueGetValue(axSizeValue, AXValueType.cgSize, &size)
 
-            let Height: Double? = ( ( targetWindow?[ kCGWindowBounds ] as? NSDictionary)?["Height"] ) as? Double
-            let Width: Double? = ( ( targetWindow?[ kCGWindowBounds ] as? NSDictionary)?["Width"] ) as? Double
-            let x: Double? = ( ( targetWindow?[ kCGWindowBounds ] as? NSDictionary)?["X"] ) as? Double
-            let y: Double? = ( ( targetWindow?[ kCGWindowBounds ] as? NSDictionary)?["Y"] ) as? Double
-
-            let pointX: Double = ( x ?? 0 ) + ( ( Width ?? 0 ) / 2 )
-            let pointY: Double = ( y ?? 0 ) + ( ( Height ?? 0 ) / 2 )
+        let pointX: Double = position.x + ( size.width / 2 )
+        let pointY: Double = position.y + ( size.height / 2 )
             CGWarpMouseCursorPosition( CGPoint( x: pointX, y: pointY ) )
-        }
+
     }
 
-    func getWindowList( pid:Int32 ) -> [NSDictionary]? {
-        guard let windowList: NSArray = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) else {
-            return nil
-        }
-
-        let tmpWindowList = windowList as! [NSDictionary]
-
-        let appWindowList = tmpWindowList.filter { (windowInfo: NSDictionary) -> Bool in
-            return windowInfo[kCGWindowOwnerPID] as! Int == pid
-        }
-
-        return appWindowList
-    }
-
-    
-    
     @objc func quit(_ sender: NSMenuItem) {
         NSApplication.shared.terminate(self)
     }
