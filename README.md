@@ -26,9 +26,9 @@ zipファイルをダウンロードして解凍すると mcm.app が出てく�
 
 # 参考にさせてもらった情報
 
-https://xyk.hatenablog.com/entry/2021/02/23/123400
-https://qiita.com/Kyome/items/b51d3c78d44e44a94921
-https://github.com/Kyome22/ShiftWindow
-https://stackoverflow.com/questions/49285656/swift-4-axvaluegetvalue-optional-value-is-nil-but-debugger-shows-a-value
-https://codeswiftly.net/detect-keystrokes-globally-macos-keystroke-logging/
+- https://xyk.hatenablog.com/entry/2021/02/23/123400
+- https://qiita.com/Kyome/items/b51d3c78d44e44a94921
+- https://github.com/Kyome22/ShiftWindow
+- https://stackoverflow.com/questions/49285656/swift-4-axvaluegetvalue-optional-value-is-nil-but-debugger-shows-a-value
+- https://codeswiftly.net/detect-keystrokes-globally-macos-keystroke-logging/
 
