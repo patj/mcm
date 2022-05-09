@@ -81,6 +81,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let mouseLocEvent = CGEvent.init(source: nil)
         let currentLocation: CGPoint = mouseLocEvent!.location
 
+        let axFrameValue: AXValue = self.copyAttributeValue(window, attribute: "AXFrame") as! AXValue
+        var currentWindowRect: CGRect = CGRect.zero
+        AXValueGetValue(axFrameValue, AXValueType.cgRect, &currentWindowRect)
+
+        // マウスカーソルの位置が新しいアプリのウィンドウの範囲内(クリックでアプリ切り替えをしたと見なす)の場合は何もしない
+        if( currentWindowRect.contains( currentLocation ) == true ){
+            return
+        }
+
         var newLocation: CGPoint = CGPoint.zero
 
         if( locationOfApps[ appIdentifier ] != nil ){
