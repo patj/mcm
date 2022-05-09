@@ -21,7 +21,7 @@ https://user-images.githubusercontent.com/67933612/167283297-bb8c6622-82ee-4546-
 
 # インストール
 
-https://github.com/patj/mcm/releases/tag/ver1.2
+https://github.com/patj/mcm/releases/
 
 zipファイルをダウンロードして解凍すると mcm.app が出てくるので、起動してください。
 (注) [セキュリティとプライバシー] > [アクセシビリティ] でコンピュータの制御を許可するアプリの中に、mcm.appを追加する必要があります。
